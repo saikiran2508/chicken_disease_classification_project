@@ -9,8 +9,8 @@ data_ingestion:
 
 prepare_base_model:
   root_dir: artifacts/prepare_base_model
-  base_model_path: artifacts/prepare_base_model/base_model.h5
-  updated_base_modal_path: artifacts/prepare_base_model/base_model_updated.h5
+  base_model_path: artifacts/prepare_base_model/base_model.keras
+  updated_base_modal_path: artifacts/prepare_base_model/base_model_updated.keras
 
 
 prepare_callbacks:
@@ -21,5 +21,5 @@ prepare_callbacks:
 
 training:
   root_dir: artifacts/training
-  training_model_path: artifacts/training/model.h5
+  training_model_path: artifacts/training/model.keras
 

@@ -1,8 +1,8 @@
 import os
-from CNN_Classifier.constant import *
-from CNN_Classifier.utils.common import read_yaml,create_directory
-from CNN_Classifier.entity.config_entity import (DataIngestionConfig,PrepareBaseModelConfig)
-from CNN_Classifier.entity.config_entity import PrepareCallbacksConfig
+from src.CNN_Classifier.constant import *
+from src.CNN_Classifier.utils.common import read_yaml,create_directory
+from src.CNN_Classifier.entity.config_entity import (DataIngestionConfig,PrepareBaseModelConfig)
+from src.CNN_Classifier.entity.config_entity import PrepareCallbacksConfig
 
 class ConfigurationManager:
     def __init__(
