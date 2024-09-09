@@ -2,7 +2,7 @@ import os
 from src.CNN_Classifier.constant import *
 from src.CNN_Classifier.utils.common import read_yaml,create_directory
 from src.CNN_Classifier.entity.config_entity import (DataIngestionConfig,PrepareBaseModelConfig)
-from src.CNN_Classifier.entity.config_entity import PrepareCallbacksConfig
+from src.CNN_Classifier.entity.config_entity import PrepareCallbacksConfig, TrainingConfig
 
 class ConfigurationManager:
     def __init__(
@@ -61,4 +61,27 @@ class ConfigurationManager:
         )
         
         return prepare_callback_config
+    
+
+    def get_training_config(self) -> TrainingConfig:
+        training = self.config.training
+        prepare_base_model = self.config.prepare_base_model
+        params = self.params
+        training_data = os.path.join(self.config.data_ingestion.unzip_dir,"chicken-fecal-images")
+        create_directory([
+            Path(training.root_dir)
+        ])
+
+        training_config = TrainingConfig(
+            root_dir=Path(training.root_dir),
+            training_model_path=Path(training.training_model_path),
+            updated_base_modal_path=Path(prepare_base_model.updated_base_modal_path),
+            training_data=Path(training_data),
+            params_epochs=params.EPOCHS,
+            params_batch_size=params.BATCH_SIZE,
+            params_is_augmentation=params.AUGMENTATION,
+            params_image_size=params.IMAGE_SIZE
+        )    
+
+        return training_config
     
