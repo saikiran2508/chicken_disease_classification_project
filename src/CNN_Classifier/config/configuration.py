@@ -37,7 +37,7 @@ class ConfigurationManager:
         prepare_base_model_config = PrepareBaseModelConfig(
             root_dir=Path(config.root_dir),
             base_model_path=Path(config.base_model_path),
-            updated_base_model_path=Path(config.updated_base_modal_path),
+            updated_base_model_path=Path(config.updated_base_model_path),
             params_image_size = self.params.IMAGE_SIZE,
             params_learning_rate=self.params.LEARNING_RATE,
             params_include_top=self.params.INCLUDE_TOP,
@@ -75,7 +75,7 @@ class ConfigurationManager:
         training_config = TrainingConfig(
             root_dir=Path(training.root_dir),
             training_model_path=Path(training.training_model_path),
-            updated_base_modal_path=Path(prepare_base_model.updated_base_modal_path),
+            updated_base_model_path=Path(prepare_base_model.updated_base_model_path),
             training_data=Path(training_data),
             params_epochs=params.EPOCHS,
             params_batch_size=params.BATCH_SIZE,

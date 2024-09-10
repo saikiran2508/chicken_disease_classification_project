@@ -8,7 +8,7 @@ class Training:
     
     def get_base_model(self):
         self.model = tf.keras.models.load_model(
-            self.config.updated_base_modal_path
+            self.config.updated_base_model_path
         )
     
     def train_valid_generator(self):
@@ -63,6 +63,12 @@ class Training:
     def train(self, callback_list: list):
         self.steps_per_epoch = self.train_generator.samples // self.train_generator.batch_size
         self.validation_steps = self.valid_generator.samples // self.valid_generator.batch_size
+        
+        print(f"Training samples: {self.train_generator.samples}")
+        print(f"Validation samples: {self.valid_generator.samples}")
+
+        if self.steps_per_epoch == 0 or self.validation_steps == 0:
+            raise ValueError("The dataset is too small for the given batch size. Please check your data directory and batch size.")
 
         self.model.fit(
             self.train_generator,
