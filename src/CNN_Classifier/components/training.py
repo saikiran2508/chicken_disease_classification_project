@@ -1,6 +1,7 @@
 from src.CNN_Classifier.entity.config_entity import TrainingConfig
 import tensorflow as tf
 from pathlib import Path
+import numpy as np
 
 class Training:
     def __init__(self, config: TrainingConfig):
@@ -13,27 +14,44 @@ class Training:
     
     def train_valid_generator(self):
 
-        datagenerator_kwargs = dict(
-            rescale = 1./255,
-            validation_split=0.20
-        )
+        # datagenerator_kwargs = dict(
+        #     rescale = 1./255,
+        #     validation_split=0.20
+        # )
 
-        dataflow_kwargs = dict(
-            target_size=self.config.params_image_size[:-1],
-            batch_size=self.config.params_batch_size,
-            interpolation="bilinear"
-        )
+        # dataflow_kwargs = dict(
+        #     target_size=self.config.params_image_size[:-1],
+        #     batch_size=self.config.params_batch_size,
+        #     interpolation="bilinear"
+        # )
+
+        def generator_to_dataset(generator):
+            output_signature = (
+                tf.TensorSpec(shape=(None, *generator.image_shape), dtype=tf.float32),
+                tf.TensorSpec(shape=(None, generator.num_classes), dtype=tf.float32)
+            )
+            dataset = tf.data.Dataset.from_generator(
+                lambda: generator,
+                output_signature=output_signature
+            )
+            return dataset
+
 
         valid_datagenerator = tf.keras.preprocessing.image.ImageDataGenerator(
-            **datagenerator_kwargs
+            rescale = 1./255,
+            validation_split=0.20
         )
 
         self.valid_generator = valid_datagenerator.flow_from_directory(
             directory=self.config.training_data,
             subset="validation",
             shuffle=False,
-            **dataflow_kwargs
+            target_size=self.config.params_image_size[:-1],
+            batch_size=self.config.params_batch_size,
+            interpolation="bilinear"
         )
+
+        self.valid_dataset = generator_to_dataset(self.valid_generator).repeat()
 
         if self.config.params_is_augmentation:
             train_datagenerator = tf.keras.preprocessing.image.ImageDataGenerator(
@@ -43,7 +61,8 @@ class Training:
                 height_shift_range=0.2,
                 shear_range=0.2,
                 zoom_range=0.2,
-                **datagenerator_kwargs
+                rescale = 1./255,
+                validation_split=0.20
             )
         else:
             train_datagenerator = valid_datagenerator
@@ -52,8 +71,12 @@ class Training:
             directory=self.config.training_data,
             subset="training",
             shuffle=True,
-            **dataflow_kwargs
+            target_size=self.config.params_image_size[:-1],
+            batch_size=self.config.params_batch_size,
+            interpolation="bilinear"
         )
+
+        self.train_dataset = generator_to_dataset(self.train_generator).repeat()
 
     @staticmethod
     def save_model(path: Path, model: tf.keras.Model):
@@ -61,21 +84,16 @@ class Training:
 
 
     def train(self, callback_list: list):
-        self.steps_per_epoch = self.train_generator.samples // self.train_generator.batch_size
-        self.validation_steps = self.valid_generator.samples // self.valid_generator.batch_size
-        
-        print(f"Training samples: {self.train_generator.samples}")
-        print(f"Validation samples: {self.valid_generator.samples}")
 
-        if self.steps_per_epoch == 0 or self.validation_steps == 0:
-            raise ValueError("The dataset is too small for the given batch size. Please check your data directory and batch size.")
+        self.steps_per_epoch = int(np.ceil(self.train_generator.samples / self.train_generator.batch_size))
+        self.validation_steps = int(np.ceil(self.valid_generator.samples / self.valid_generator.batch_size))
 
         self.model.fit(
-            self.train_generator,
+            self.train_dataset,
             epochs=self.config.params_epochs,
             steps_per_epoch=self.steps_per_epoch,
             validation_steps=self.validation_steps,
-            validation_data=self.valid_generator,
+            validation_data=self.valid_dataset,
             callbacks=callback_list
         )
 
