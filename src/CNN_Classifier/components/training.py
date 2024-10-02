@@ -1,4 +1,4 @@
-from src.CNN_Classifier.entity.config_entity import TrainingConfig
+from CNN_Classifier.entity.config_entity import TrainingConfig
 import tensorflow as tf
 from pathlib import Path
 import numpy as np

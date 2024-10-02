@@ -1,8 +1,8 @@
 import os
-from src.CNN_Classifier.constant import *
-from src.CNN_Classifier.utils.common import read_yaml,create_directory
-from src.CNN_Classifier.entity.config_entity import (DataIngestionConfig,PrepareBaseModelConfig)
-from src.CNN_Classifier.entity.config_entity import PrepareCallbacksConfig, TrainingConfig
+from CNN_Classifier.constant import *
+from CNN_Classifier.utils.common import read_yaml,create_directory
+from CNN_Classifier.entity.config_entity import (DataIngestionConfig,PrepareBaseModelConfig)
+from CNN_Classifier.entity.config_entity import PrepareCallbacksConfig, TrainingConfig, EvaluationConfig
 
 class ConfigurationManager:
     def __init__(
@@ -84,4 +84,15 @@ class ConfigurationManager:
         )    
 
         return training_config
+    
+    def get_validation_config(self) -> EvaluationConfig:
+        eval_config = EvaluationConfig(
+            path_of_model=Path("artifacts/training/model.keras"),
+            training_data = Path("artifacts/data_ingestion/Chicken-fecal-images"),
+            all_params=self.params,
+            params_image_size=self.params.IMAGE_SIZE,
+            params_batch_size=self.params.BATCH_SIZE
+        )
+
+        return eval_config
     
