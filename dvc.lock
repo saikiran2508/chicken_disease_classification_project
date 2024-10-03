@@ -44,3 +44,78 @@ stages:
       md5: 6c2a493f2a5255dea7c21b679ed05eb3.dir
       size: 118061401
       nfiles: 2
+  training:
+    cmd: python src/CNN_Classifier/pipeline/stage_03_training.py
+    deps:
+    - path: artifacts/data_ingestion/Chicken-fecal-images
+      hash: md5
+      md5: 9e1f8dd2eae3c29e9d635df89d438ae4.dir
+      size: 12207807
+      nfiles: 390
+    - path: artifacts/prepare_base_model
+      hash: md5
+      md5: 6c2a493f2a5255dea7c21b679ed05eb3.dir
+      size: 118061401
+      nfiles: 2
+    - path: config/config.yaml
+      hash: md5
+      md5: 3f6a545eeb1024e925ea5d0f0bbca5c4
+      size: 819
+    - path: src/CNN_Classifier/components/prepared_callbacks.py
+      hash: md5
+      md5: e15428907bd23b4ae77e5224962c6ead
+      size: 1015
+    - path: src/CNN_Classifier/pipeline/stage_02_prepare_base_model.py
+      hash: md5
+      md5: ea69ef7c2746c5c42658c309e66f99b3
+      size: 989
+    - path: src/CNN_Classifier/pipeline/stage_03_training.py
+      hash: md5
+      md5: 9487c7a73a2e92b2d5ba50809c3c37f1
+      size: 1235
+    params:
+      params.yaml:
+        AUGMENTATION: true
+        BATCH_SIZE: 16
+        EPOCHS: 6
+        IMAGE_SIZE:
+        - 224
+        - 224
+        - 3
+    outs:
+    - path: artifacts/training/model.keras
+      hash: md5
+      md5: 5d6df23517a5cf629991008fa8515762
+      size: 59135201
+  evaluation:
+    cmd: python src/CNN_Classifier/pipeline/stage_04_evaluation.py
+    deps:
+    - path: artifacts/data_ingestion/Chicken-fecal-images
+      hash: md5
+      md5: 9e1f8dd2eae3c29e9d635df89d438ae4.dir
+      size: 12207807
+      nfiles: 390
+    - path: artifacts/training/model.keras
+      hash: md5
+      md5: 5d6df23517a5cf629991008fa8515762
+      size: 59135201
+    - path: config/config.yaml
+      hash: md5
+      md5: 3f6a545eeb1024e925ea5d0f0bbca5c4
+      size: 819
+    - path: src/CNN_Classifier/pipeline/stage_04_evaluation.py
+      hash: md5
+      md5: 75578f7a0e44cd01b08abdd81a6961d2
+      size: 864
+    params:
+      params.yaml:
+        BATCH_SIZE: 16
+        IMAGE_SIZE:
+        - 224
+        - 224
+        - 3
+    outs:
+    - path: scores.json
+      hash: md5
+      md5: b6c503cbecf1dc61eee4ee38a41ecd11
+      size: 57

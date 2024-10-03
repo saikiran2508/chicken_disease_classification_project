@@ -96,7 +96,6 @@ class Training:
             validation_data=self.valid_dataset,
             callbacks=callback_list
         )
-
         self.save_model(
             path=self.config.training_model_path,
             model=self.model
